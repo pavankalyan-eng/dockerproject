@@ -28,7 +28,7 @@ app.post('/transaction', (req,res)=>{
         t=moment().unix()
         console.log("{ \"timestamp\" : %d, \"msg\", \"Adding Expense\", \"amount\" : %d, \"Description\": \"%s\" }", t, req.body.amount, req.body.desc);
         var success = transactionService.addTransaction(req.body.amount,req.body.desc);
-        if (success == 200) res.json({ message: 'added transaction successfully'});
+        if (success = 200) res.json({ message: 'added transaction successfully'});
     }catch (err){
         res.json({ message: 'something went wrong', error : err.message});
     }
