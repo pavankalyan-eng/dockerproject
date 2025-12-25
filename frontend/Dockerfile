@@ -1,5 +1,5 @@
 # Use official lightweight Nginx image
-FROM nginx:alpine
+FROM nginx
 
 # Remove default Nginx website config
 RUN rm -f /etc/nginx/conf.d/default.conf
