@@ -1,5 +1,18 @@
-FROM nginx
-COPY code /usr/share/nginx/html
-RUN rm -rf /etc/nginx/nginx.conf 
-RUN rm -rf /etc/nginx/conf.d/default.conf  
-COPY nginx.conf /etc/nginx/nginx.conf
+# Use official lightweight Nginx image
+FROM nginx:alpine
+
+# Remove default Nginx website config
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# Copy frontend build files
+# "code" should contain index.html, assets, etc.
+COPY code/ /usr/share/nginx/html/
+
+# Copy custom Nginx server configuration
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
