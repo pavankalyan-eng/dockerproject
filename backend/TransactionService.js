@@ -1,56 +1,79 @@
 const dbcreds = require('./DbConfig');
-const mysql = require('mysql2'); // Change to mysql2
+const mysql = require('mysql2'); 
 
-const con = mysql.createConnection({
-    host: process.env.DB_HOST || dbcreds.DB_HOST,
-    user: process.env.DB_USER || dbcreds.DB_USER,
-    password: process.env.DB_PWD || dbcreds.DB_PWD,
-    database: process.env.DB_DATABASE || dbcreds.DB_DATABASE
+// 1. Create a Connection Pool (Better for Docker stability)
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || dbcreds.DB_HOST || 'mysql', 
+    user: process.env.DB_USER || dbcreds.DB_USER || 'root',
+    password: process.env.DB_PWD || dbcreds.DB_PWD || 'root_password',
+    database: process.env.DB_DATABASE || dbcreds.DB_DATABASE || 'my_database',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-function addTransaction(amount,desc){
-    var mysql = `INSERT INTO \`transactions\` (\`amount\`, \`description\`) VALUES ('${amount}','${desc}')`;
-    con.query(mysql, function(err,result){
-        if (err) throw err;
-        //console.log("Adding to the table should have worked");
-    }) 
-    return 200;
+// 2. addTransaction function using Parameterized Queries
+function addTransaction(amount, desc, callback) { 
+    const sql = "INSERT INTO `transactions` (`amount`, `description`) VALUES (?, ?)";
+    
+    pool.query(sql, [amount, desc], function(err, result) {
+        if (err) {
+            console.error("Database Error:", err.message);
+            return callback(err); 
+        }
+        return callback(null, result); 
+    });
+    // Removed "return 200" because we now use the callback instead
 }
 
-function getAllTransactions(callback){
-    var mysql = "SELECT * FROM transactions";
-    con.query(mysql, function(err,result){
-        if (err) throw err;
-        //console.log("Getting all transactions...");
-        return(callback(result));
+// 3. getAllTransactions function
+function getAllTransactions(callback) {
+    const sql = "SELECT * FROM transactions";
+    pool.query(sql, function(err, result) {
+        if (err) {
+            console.error("Database Error in getAllTransactions:", err.message);
+            return;
+        }
+        return callback(result);
     });
 }
 
-function findTransactionById(id,callback){
-    var mysql = `SELECT * FROM transactions WHERE id = ${id}`;
-    con.query(mysql, function(err,result){
-        if (err) throw err;
-        console.log(`retrieving transactions with id ${id}`);
-        return(callback(result));
-    }) 
+// 4. findTransactionById function
+function findTransactionById(id, callback) {
+    const sql = "SELECT * FROM transactions WHERE id = ?";
+    pool.query(sql, [id], function(err, result) {
+        if (err) {
+            console.error("Database Error in findTransactionById:", err.message);
+            return;
+        }
+        console.log(`Retrieving transaction with id ${id}`);
+        return callback(result);
+    });
 }
 
-function deleteAllTransactions(callback){
-    var mysql = "DELETE FROM transactions";
-    con.query(mysql, function(err,result){
-        if (err) throw err;
-        //console.log("Deleting all transactions...");
-        return(callback(result));
-    }) 
+// 5. deleteAllTransactions function
+function deleteAllTransactions(callback) {
+    const sql = "DELETE FROM transactions";
+    pool.query(sql, function(err, result) {
+        if (err) {
+            console.error("Database Error in deleteAllTransactions:", err.message);
+            return;
+        }
+        return callback(result);
+    });
 }
 
-function deleteTransactionById(id, callback){
-    var mysql = `DELETE FROM transactions WHERE id = ${id}`;
-    con.query(mysql, function(err,result){
-        if (err) throw err;
-        console.log(`Deleting transactions with id ${id}`);
-        return(callback(result));
-    }) 
+// 6. deleteTransactionById function
+function deleteTransactionById(id, callback) {
+    const sql = "DELETE FROM transactions WHERE id = ?";
+    pool.query(sql, [id], function(err, result) {
+        if (err) {
+            console.error("Database Error in deleteTransactionById:", err.message);
+            return;
+        }
+        console.log(`Deleting transaction with id ${id}`);
+        return callback(result);
+    });
 }
 
 module.exports = {
@@ -60,4 +83,3 @@ module.exports = {
     deleteAllTransactions,
     deleteTransactionById
 };
-

@@ -22,15 +22,22 @@ app.get('/health',(req,res)=>{
 });
 
 // ADD TRANSACTION
-app.post('/transaction', (req,res)=>{
-    var response = "";
-    try{
-        t=moment().unix()
-        console.log("{ \"timestamp\" : %d, \"msg\", \"Adding Expense\", \"amount\" : %d, \"Description\": \"%s\" }", t, req.body.amount, req.body.desc);
-        var success = transactionService.addTransaction(req.body.amount,req.body.desc);
-        if (success = 200) res.json({ message: 'added transaction successfully'});
-    }catch (err){
-        res.json({ message: 'something went wrong', error : err.message});
+app.post('/transaction', (req, res) => {
+    try {
+        const t = moment().unix();
+        console.log("{ \"timestamp\" : %d, \"msg\": \"Adding Expense\" }", t);
+
+        // This now waits for the database to finish before sending res.json
+        transactionService.addTransaction(req.body.amount, req.body.desc, function(err, result) {
+            if (err) {
+                // If database fails, send 500 error
+                return res.status(500).json({ message: 'Database failure', error: err.message });
+            }
+            // If database succeeds, send 200 success
+            res.status(200).json({ message: 'added transaction successfully' });
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'something went wrong', error: err.message });
     }
 });
 
