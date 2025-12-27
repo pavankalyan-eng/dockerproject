@@ -1,16 +1,38 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta name="theme-color" content="#000000"/>
-  <meta name="description" content="Expense App"/>
-  <title>React App</title>
-  <script defer="defer" src="./static/js/main.bcd36112.js"></script>
-  <link href="./static/css/main.b20b6ac4.css" rel="stylesheet">
+  <title>Expense App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root"></div>
+
+<div class="sidebar">
+  <h2>🏠 HOME</h2>
+  <h2>➕ ADD EXPENSE</h2>
+</div>
+
+<div class="content">
+  <h1>ADD / VIEW EXPENSES</h1>
+
+  <div class="form">
+    <input type="text" id="desc" placeholder="Description">
+    <input type="number" id="amount" placeholder="Amount">
+    <button onclick="addExpense()">ADD</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>AMOUNT</th>
+        <th>DESC</th>
+      </tr>
+    </thead>
+    <tbody id="expenseTable"></tbody>
+  </table>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
+
