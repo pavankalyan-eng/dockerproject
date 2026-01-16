@@ -1,18 +1,6 @@
-const mysql = require("mysql2");
-
-const db = mysql.createConnection({
-  host: "mysql",               // docker service name
-  user: "expense",
-  password: "ExpenseApp@123",
-  database: "transactions"
+module.exports = Object.freeze({
+    DB_HOST : '',
+    DB_USER : 'expense',
+    DB_PWD : 'ExpenseApp@1',
+    DB_DATABASE : 'transactions'
 });
-
-db.connect((err) => {
-  if (err) {
-    console.error("MySQL connection failed:", err);
-  } else {
-    console.log("MySQL connected successfully");
-  }
-});
-
-module.exports = db;

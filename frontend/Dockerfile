@@ -1,17 +1,19 @@
-# Use official lightweight Nginx image
-FROM nginx
+FROM nginx:mainline-alpine3.20-slim
 
-# Remove default nginx config
-RUN rm -f /etc/nginx/conf.d/default.conf
-
-# Copy React build files
-COPY code/ /usr/share/nginx/html/
-
-# Copy custom nginx config
-COPY default.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+RUN rm -rf /etc/nginx/nginx.conf && \
+    rm -rf /etc/nginx/conf.d/default.conf && \
+    mkdir -p /var/cache/nginx/client_temp && \
+    mkdir -p /var/cache/nginx/proxy_temp && \
+    mkdir -p /var/cache/nginx/fastcgi_temp && \
+    mkdir -p /var/cache/nginx/uwsgi_temp && \
+    mkdir -p /var/cache/nginx/scgi_temp && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /etc/nginx/ && \
+    chmod -R 755 /etc/nginx/ && \
+    chown -R nginx:nginx /var/log/nginx && \
+    touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid /run/nginx.pid
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY code /usr/share/nginx/html
+USER nginx
+#COPY expense.conf /etc/nginx/conf.d/expense.conf

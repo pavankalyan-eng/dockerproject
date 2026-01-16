@@ -1,13 +1,13 @@
 CREATE DATABASE IF NOT EXISTS transactions;
-
 USE transactions;
 
-CREATE TABLE IF NOT EXISTS expenses (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  amount INT,
-  item VARCHAR(100)
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    amount INT,
+    description VARCHAR(255)
 );
 
-INSERT INTO expenses (amount, item)
-VALUES (200, 'travel');
+CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
+GRANT ALL ON transactions.* TO 'expense'@'%';
+FLUSH PRIVILEGES;
 
