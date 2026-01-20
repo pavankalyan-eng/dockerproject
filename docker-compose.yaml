@@ -1,30 +1,35 @@
 version: "3"
-networks:
-  expense:
 volumes:
   mysql:  # docker volume create mysql
+
+networks:
+  expense:
+    external: true  # tells Compose to use the existing expense network
+
 services:
   mysql:
     image: pavankalyan111/mysql
-    container_name: mysql # --name mysql
+    container_name: mysql
     volumes:
-    - mysql:/var/lib/mysql # -v mysql:/var/lib/mysql
-    network:
-     - expense
+      - mysql:/var/lib/mysql
+    networks:
+      - expense
+
   backend:
     image: pavankalyan111/backend
     container_name: backend
     command: sh -c "sleep 5 && node /opt/server/index.js"
     depends_on:
-    - mysql
-    network:
-     - expense
+      - mysql
+    networks:
+      - expense
+
   frontend:
     image: pavankalyan111/frontend
     container_name: frontend
     ports:
-    - 8080:80
+      - "8080:80"
     depends_on:
-    - backend
-    network:
-     - expense
+      - backend
+    networks:
+      - expense
